@@ -3,7 +3,6 @@ package dev.twentyfive.voxelizer.command;
 import dev.twentyfive.voxelizer.math.Vector3Int;
 import dev.twentyfive.voxelizer.model.Model;
 import dev.twentyfive.voxelizer.model.ModelParser;
-import dev.twentyfive.voxelizer.model.Models;
 import dev.twentyfive.voxelizer.util.VoxelizeHelper;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -12,44 +11,39 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.nio.file.FileSystems;
-import java.nio.file.Paths;
 import java.util.Arrays;
 
 public class CommandVoxelize implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if (!(sender instanceof Player))
+        if (!(sender instanceof Player) || args.length < 3)
             return true;
 
         Location location = ((Player) sender).getLocation();
         Vector3Int pos = new Vector3Int(location.getBlockX(), location.getBlockY(), location.getBlockZ());
 
-        Model model = Models.TEST_TRIANGLE.model;
-        if (args.length >= 2) {
-            double scale = Double.parseDouble(args[0]);
+        double scale = Double.parseDouble(args[0]);
+        double thickness = Double.parseDouble(args[1]);
 
-            String path = Paths.get("").toAbsolutePath()
-                    + FileSystems.getDefault().getSeparator()
-                    + "plugins"
-                    + FileSystems.getDefault().getSeparator()
-                    + "Voxelizer"
-                    + FileSystems.getDefault().getSeparator()
-                    + String.join(" ", Arrays.copyOfRange(args, 1, args.length));
+        String filename = String.join(" ", Arrays.copyOfRange(args, 2, args.length)).replaceAll("[^a-zA-Z0-9.-]", "_");
+        System.out.println("Trying to parse model: " + filename);
 
-            System.out.println("Trying to parse model at: " + path);
+        System.out.println("Parsing model...");
+        long startTimeParsing = System.currentTimeMillis();
+        Model model = ModelParser.parseModelFromFile(filename, scale);
+        long deltaTimeParsing = System.currentTimeMillis() - startTimeParsing;
+        System.out.println("Parsed model in " + deltaTimeParsing + "ms");
 
-            System.out.println("Parsing model...");
-            model = ModelParser.parseModelFromFile(path, scale);
-        }
-
-        System.out.println("Model vertices: " + model.vertices.length);
-        System.out.println("Model triangles: " + model.triangles.length);
+        System.out.println("    Model vertices: " + model.vertices.length);
+        System.out.println("    Model triangles: " + model.triangles.length);
 
         System.out.println("Building model...");
-        VoxelizeHelper.buildVoxelizedModel(location.getWorld(), pos, model);
-        System.out.println("Completed");
+        long startTimeBuilding = System.currentTimeMillis();
+        VoxelizeHelper.buildVoxelizedModel(location.getWorld(), pos, model, thickness);
+        long deltaTimeBuilding = System.currentTimeMillis() - startTimeBuilding;
+        System.out.println("Built model in " + deltaTimeBuilding + "ms");
+        System.out.println("Completed!");
 
         return true;
     }

@@ -32,7 +32,7 @@ public class Geometry {
     }
 
 
-    public static ArrayList<Voxel> getVoxelizedModel(Model model) {
+    public static ArrayList<Voxel> getVoxelizedModel(Model model, double thickness) {
         ArrayList<Voxel> voxels = new ArrayList<>();
 
         for (Triangle triangle : model.triangles) {
@@ -59,7 +59,7 @@ public class Geometry {
                         Vector3 point = new Vector3(x, y, z);
 
                         double distance = Math.abs(calculateSignedDistancePlanePoint(planeNormal, a, point));
-                        if (distance > 0.5)
+                        if (distance > thickness)
                             continue;
 
                         Vector3 projectedPoint = projectVector3To2DPlaneCoordinates(planeNormal, a, b, projectPointOnPlane(planeNormal, a, point));

@@ -5,4 +5,4 @@ api-version: 1.18
 commands:
   voxelize:
     description: Voxelize a 3d model from a .obj file
-    usage: voxelize <scale> <.obj file>
+    usage: voxelize <scale> <thickness> <.obj file>

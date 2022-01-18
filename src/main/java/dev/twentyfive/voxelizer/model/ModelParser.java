@@ -6,15 +6,27 @@ import dev.twentyfive.voxelizer.math.Vector3;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 public class ModelParser {
 
-    public static Model parseModelFromFile(String path, double scale) {
+    private static String getPathToFile(String filename) {
+        return Paths.get("").toAbsolutePath()
+                + FileSystems.getDefault().getSeparator()
+                + "plugins"
+                + FileSystems.getDefault().getSeparator()
+                + "Voxelizer"
+                + FileSystems.getDefault().getSeparator()
+                + filename;
+    }
+
+    public static Model parseModelFromFile(String filename, double scale) {
         ArrayList<Vector3> vertices = new ArrayList<>();
         ArrayList<Triangle> triangles = new ArrayList<>();
 
-        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(getPathToFile(filename)))) {
             for (String line; (line = br.readLine()) != null; ) {
                 if (line.startsWith("v ")) {
                     String[] xyz = line.substring(2).trim().split(" ");

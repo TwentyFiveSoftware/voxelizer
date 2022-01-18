@@ -7,8 +7,8 @@ import org.bukkit.World;
 
 public class VoxelizeHelper {
 
-    public static void buildVoxelizedModel(World world, Vector3Int position, Model model) {
-        for (Voxel voxel : Geometry.getVoxelizedModel(model)) {
+    public static void buildVoxelizedModel(World world, Vector3Int position, Model model, double thickness) {
+        for (Voxel voxel : Geometry.getVoxelizedModel(model, thickness)) {
             world.getBlockAt(position.x + voxel.location.x, position.y + voxel.location.y, position.z + voxel.location.z)
                     .setType(voxel.material);
         }
