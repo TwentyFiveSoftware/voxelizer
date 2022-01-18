@@ -32,7 +32,7 @@ public class Geometry {
     }
 
 
-    public static ArrayList<Voxel> getVoxelizedModel(Model model, double thickness) {
+    public static ArrayList<Voxel> voxelizeModel(Model model, double thickness) {
         ArrayList<Voxel> voxels = new ArrayList<>();
 
         for (Triangle triangle : model.triangles) {
@@ -68,7 +68,7 @@ public class Geometry {
                         if (!insideTriangle)
                             continue;
 
-                        voxels.add(new Voxel(new Vector3Int(x, y, z), Material.RED_CONCRETE));
+                        voxels.add(new Voxel(new Vector3(x, y, z), Material.RED_CONCRETE));
                     }
                 }
             }
