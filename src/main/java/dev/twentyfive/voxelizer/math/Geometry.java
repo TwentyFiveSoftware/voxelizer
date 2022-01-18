@@ -40,13 +40,13 @@ public class Geometry {
             Vector3 b = model.vertices[triangle.b];
             Vector3 c = model.vertices[triangle.c];
 
-            int minX = (int) Math.min(a.x, Math.min(b.x, c.x));
-            int minY = (int) Math.min(a.y, Math.min(b.y, c.y));
-            int minZ = (int) Math.min(a.z, Math.min(b.z, c.z));
+            int minX = (int) (Math.min(a.x, Math.min(b.x, c.x)) - Math.ceil(thickness));
+            int minY = (int) (Math.min(a.y, Math.min(b.y, c.y)) - Math.ceil(thickness));
+            int minZ = (int) (Math.min(a.z, Math.min(b.z, c.z)) - Math.ceil(thickness));
 
-            int maxX = (int) Math.max(a.x, Math.max(b.x, c.x));
-            int maxY = (int) Math.max(a.y, Math.max(b.y, c.y));
-            int maxZ = (int) Math.max(a.z, Math.max(b.z, c.z));
+            int maxX = (int) (Math.max(a.x, Math.max(b.x, c.x)) + Math.ceil(thickness));
+            int maxY = (int) (Math.max(a.y, Math.max(b.y, c.y)) + Math.ceil(thickness));
+            int maxZ = (int) (Math.max(a.z, Math.max(b.z, c.z)) + Math.ceil(thickness));
 
             Vector3 planeNormal = calculateNormalizedPlaneNormal(a, b, c);
             Vector3 projectedA = projectVector3To2DPlaneCoordinates(planeNormal, a, b, a);
@@ -56,7 +56,7 @@ public class Geometry {
             for (int x = minX; x <= maxX; x++) {
                 for (int y = minY; y <= maxY; y++) {
                     for (int z = minZ; z <= maxZ; z++) {
-                        Vector3 point = new Vector3(x, y, z);
+                        Vector3 point = new Vector3(x + 0.5, y + 0.5, z + 0.5);
 
                         double distance = Math.abs(calculateSignedDistancePlanePoint(planeNormal, a, point));
                         if (distance > thickness)
