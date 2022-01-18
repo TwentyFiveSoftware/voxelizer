@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 public class ModelParser {
 
-    public static Model parseModelFromFile(String path) {
+    public static Model parseModelFromFile(String path, double scale) {
         ArrayList<Vector3> vertices = new ArrayList<>();
         ArrayList<Triangle> triangles = new ArrayList<>();
 
@@ -18,7 +18,8 @@ public class ModelParser {
             for (String line; (line = br.readLine()) != null; ) {
                 if (line.startsWith("v ")) {
                     String[] xyz = line.substring(2).split(" ");
-                    vertices.add(new Vector3(Double.parseDouble(xyz[0]), Double.parseDouble(xyz[1]), Double.parseDouble(xyz[2])));
+                    Vector3 vertex = new Vector3(Double.parseDouble(xyz[0]), Double.parseDouble(xyz[1]), Double.parseDouble(xyz[2]));
+                    vertices.add(Vector3.multiply(vertex, scale));
 
                 } else if (line.startsWith("f ")) {
                     String[] abc = line.substring(2).split(" ");

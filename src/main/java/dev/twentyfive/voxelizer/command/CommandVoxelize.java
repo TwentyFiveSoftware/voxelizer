@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.FileSystems;
 import java.nio.file.Paths;
+import java.util.Arrays;
 
 public class CommandVoxelize implements CommandExecutor {
 
@@ -26,18 +27,20 @@ public class CommandVoxelize implements CommandExecutor {
         Vector3Int pos = new Vector3Int(location.getBlockX(), location.getBlockY(), location.getBlockZ());
 
         Model model = Models.TEST_TRIANGLE.model;
-        if (args.length > 0) {
+        if (args.length >= 2) {
+            double scale = Double.parseDouble(args[0]);
+
             String path = Paths.get("").toAbsolutePath()
                     + FileSystems.getDefault().getSeparator()
                     + "plugins"
                     + FileSystems.getDefault().getSeparator()
                     + "Voxelizer"
                     + FileSystems.getDefault().getSeparator()
-                    + String.join(" ", args);
+                    + String.join(" ", Arrays.copyOfRange(args, 1, args.length));
 
             System.out.println("Trying to parse model at: " + path);
 
-            model = ModelParser.parseModelFromFile(path);
+            model = ModelParser.parseModelFromFile(path, scale);
             System.out.println("Parsing model...");
         }
 
