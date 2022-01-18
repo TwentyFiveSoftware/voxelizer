@@ -1,49 +1,24 @@
 package dev.twentyfive.voxelizer.math;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.awt.image.WritableRaster;
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
+import dev.twentyfive.voxelizer.model.Model;
+import dev.twentyfive.voxelizer.util.Voxel;
+import org.bukkit.Material;
+
+import java.util.ArrayList;
 
 public class Geometry {
-    static class Vector {
-        double x, y;
 
-        public Vector(double x, double y) {
-            this.x = x;
-            this.y = y;
-        }
-    }
-
-    static class Triangle {
-        int a, b, c;
-
-        public Triangle(int a, int b, int c) {
-            this.a = a;
-            this.b = b;
-            this.c = c;
-        }
-    }
-
-    static final Vector[] vertices = {new Vector(3.5, 8.1), new Vector(25.3, 27.8), new Vector(17.9, 2.5)};
-    static final Triangle[] triangles = {new Triangle(0, 1, 2)};
-
-    static boolean edgeFunction(Vector a, Vector b, Vector point) {
+    static boolean edgeFunction(Vector3 a, Vector3 b, Vector3 point) {
         return (point.x - a.x) * (b.y - a.y) - (point.y - a.y) * (b.x - a.x) >= 0;
     }
 
-    public static void main(String[] args) {
-        final int IMAGE_SIZE = 30;
-        int[] pixels = new int[3 * IMAGE_SIZE * IMAGE_SIZE];
-        Arrays.fill(pixels, 0xFF);
+    public static ArrayList<Voxel> getVoxelizedModel(Model model) {
+        ArrayList<Voxel> voxels = new ArrayList<>();
 
-
-        for (Triangle triangle : triangles) {
-            Vector a = vertices[triangle.a];
-            Vector b = vertices[triangle.b];
-            Vector c = vertices[triangle.c];
+        for (Triangle triangle : model.triangles) {
+            Vector3 a = model.vertices[triangle.a];
+            Vector3 b = model.vertices[triangle.b];
+            Vector3 c = model.vertices[triangle.c];
 
             int minX = (int) Math.min(a.x, Math.min(b.x, c.x));
             int minY = (int) Math.min(a.y, Math.min(b.y, c.y));
@@ -52,31 +27,15 @@ public class Geometry {
 
             for (int x = minX; x <= maxX; x++) {
                 for (int y = minY; y <= maxY; y++) {
-                    Vector point = new Vector(x, y);
+                    Vector3 point = new Vector3(x, y, 0);
                     boolean inside = edgeFunction(a, b, point) && edgeFunction(b, c, point) && edgeFunction(c, a, point);
 
-                    if (inside) {
-                        int index = 3 * ((IMAGE_SIZE - y - 1) * IMAGE_SIZE + x);
-                        pixels[index] = 0xFF;
-                        pixels[index + 1] = 0x00;
-                        pixels[index + 2] = 0x00;
-                    }
+                    if (inside)
+                        voxels.add(new Voxel(new Vector3Int(x, 0, y), Material.RED_CONCRETE));
                 }
             }
         }
 
-        saveImage(pixels, IMAGE_SIZE, IMAGE_SIZE);
-    }
-
-    public static void saveImage(int[] pixels, int width, int height) {
-        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        WritableRaster raster = image.getRaster();
-        raster.setPixels(0, 0, width, height, pixels);
-
-        try {
-            ImageIO.write(image, "png", new File("output.png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        return voxels;
     }
 }

@@ -1,7 +1,7 @@
 name: Voxelizer
 version: 1.0
 main: dev.twentyfive.voxelizer.Voxelizer
-api-version: 18
+api-version: 1.18
 commands:
   voxelize:
     description: voxelize
