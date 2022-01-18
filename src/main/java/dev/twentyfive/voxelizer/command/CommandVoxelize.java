@@ -40,8 +40,8 @@ public class CommandVoxelize implements CommandExecutor {
 
             System.out.println("Trying to parse model at: " + path);
 
-            model = ModelParser.parseModelFromFile(path, scale);
             System.out.println("Parsing model...");
+            model = ModelParser.parseModelFromFile(path, scale);
         }
 
         System.out.println("Model vertices: " + model.vertices.length);

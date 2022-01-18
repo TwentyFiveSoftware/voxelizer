@@ -24,6 +24,14 @@ public class Geometry {
         return (point.x - a.x) * (b.y - a.y) - (point.y - a.y) * (b.x - a.x) >= 0;
     }
 
+    private static Vector3 projectVector3To2DPlaneCoordinates(Vector3 planeNormal, Vector3 planePointA, Vector3 planePointB, Vector3 point) {
+        Vector3 xAxis = Vector3.sub(planePointB, planePointA).normalize();
+        Vector3 yAxis = Vector3.crossProduct(planeNormal, xAxis).normalize();
+        Vector3 vectorToPoint = Vector3.sub(point, planePointA);
+        return new Vector3(Vector3.dotProduct(vectorToPoint, xAxis), Vector3.dotProduct(vectorToPoint, yAxis), 0);
+    }
+
+
     public static ArrayList<Voxel> getVoxelizedModel(Model model) {
         ArrayList<Voxel> voxels = new ArrayList<>();
 
@@ -41,6 +49,9 @@ public class Geometry {
             int maxZ = (int) Math.max(a.z, Math.max(b.z, c.z));
 
             Vector3 planeNormal = calculateNormalizedPlaneNormal(a, b, c);
+            Vector3 projectedA = projectVector3To2DPlaneCoordinates(planeNormal, a, b, a);
+            Vector3 projectedB = projectVector3To2DPlaneCoordinates(planeNormal, a, b, b);
+            Vector3 projectedC = projectVector3To2DPlaneCoordinates(planeNormal, a, b, c);
 
             for (int x = minX; x <= maxX; x++) {
                 for (int y = minY; y <= maxY; y++) {
@@ -51,8 +62,9 @@ public class Geometry {
                         if (distance > 0.5)
                             continue;
 
-                        Vector3 projectedPoint = projectPointOnPlane(planeNormal, a, point);
-                        boolean insideTriangle = edgeFunction(a, b, projectedPoint) && edgeFunction(b, c, projectedPoint) && edgeFunction(c, a, projectedPoint);
+                        Vector3 projectedPoint = projectVector3To2DPlaneCoordinates(planeNormal, a, b, projectPointOnPlane(planeNormal, a, point));
+                        boolean insideTriangle = edgeFunction(projectedB, projectedA, projectedPoint) && edgeFunction(projectedC, projectedB, projectedPoint)
+                                && edgeFunction(projectedA, projectedC, projectedPoint);
                         if (!insideTriangle)
                             continue;
 
