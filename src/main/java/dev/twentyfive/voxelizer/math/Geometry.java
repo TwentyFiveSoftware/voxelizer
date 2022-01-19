@@ -1,6 +1,7 @@
 package dev.twentyfive.voxelizer.math;
 
 import dev.twentyfive.voxelizer.model.Model;
+import dev.twentyfive.voxelizer.util.ColorHelper;
 import dev.twentyfive.voxelizer.util.Voxel;
 import org.bukkit.Material;
 
@@ -55,12 +56,13 @@ public class Geometry {
 
     private static Material getMatchingMaterial(Vector3 color) {
         Material matchingMaterial = Material.NETHER_BRICKS;
-        double score = Integer.MAX_VALUE;
+        double smallestDifference = Double.MAX_VALUE;
 
         for (Map.Entry<Material, Vector3> material : MATERIAL_COLORS.entrySet()) {
-            double materialScore = Math.abs(material.getValue().x - color.x) + Math.abs(material.getValue().y - color.y) + Math.abs(material.getValue().z - color.z);
-            if (materialScore < score) {
-                score = materialScore;
+            double difference = ColorHelper.calculateColorDifference(color, material.getValue());
+
+            if (difference < smallestDifference) {
+                smallestDifference = difference;
                 matchingMaterial = material.getKey();
             }
         }
