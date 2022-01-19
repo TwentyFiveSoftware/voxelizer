@@ -14,8 +14,14 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ModelParser {
+
+    private static final Pattern REGEX_TRIANGLE =
+            Pattern.compile("^f ([0-9]+)/?([0-9]*)/?[0-9]* ([0-9]+)/?([0-9]*)/?[0-9]* ([0-9]+)/?([0-9]*)/?[0-9]*(?: ([0-9]+)/?([0-9]*)/?[0-9]*)?$");
+
 
     private static String getPathToFile(String filename) {
         return Paths.get("").toAbsolutePath()
@@ -53,17 +59,23 @@ public class ModelParser {
                 }
 
                 if (line.startsWith("f ")) {
-                    String[] abc = line.substring(2).trim().split(" ");
-                    String[] aSplit = abc[0].split("/");
-                    String[] bSplit = abc[1].split("/");
-                    String[] cSplit = abc[2].split("/");
+                    Matcher matcher = REGEX_TRIANGLE.matcher(line.trim());
+                    if (!matcher.find())
+                        continue;
 
-                    int a = Integer.parseInt(aSplit[0]) - 1;
-                    int b = Integer.parseInt(bSplit[0]) - 1;
-                    int c = Integer.parseInt(cSplit[0]) - 1;
-                    int aUV = (aSplit.length > 1 ? Integer.parseInt(aSplit[1]) : 0) - 1;
-                    int bUV = (bSplit.length > 1 ? Integer.parseInt(bSplit[1]) : 0) - 1;
-                    int cUV = (cSplit.length > 1 ? Integer.parseInt(cSplit[1]) : 0) - 1;
+                    int a = Integer.parseInt(matcher.group(1)) - 1;
+                    int b = Integer.parseInt(matcher.group(3)) - 1;
+                    int c = Integer.parseInt(matcher.group(5)) - 1;
+
+                    int aUV = (matcher.group(2).isEmpty() ? 0 : Integer.parseInt(matcher.group(2))) - 1;
+                    int bUV = (matcher.group(4).isEmpty() ? 0 : Integer.parseInt(matcher.group(4))) - 1;
+                    int cUV = (matcher.group(6).isEmpty() ? 0 : Integer.parseInt(matcher.group(6))) - 1;
+
+                    if (matcher.group(7) != null) {
+                        int d = Integer.parseInt(matcher.group(7)) - 1;
+                        int dUV = (matcher.group(8).isEmpty() ? 0 : Integer.parseInt(matcher.group(8))) - 1;
+                        triangles.add(new Triangle(a, c, d, aUV, cUV, dUV, currentMaterial));
+                    }
 
                     triangles.add(new Triangle(a, b, c, aUV, bUV, cUV, currentMaterial));
                     continue;
@@ -82,7 +94,7 @@ public class ModelParser {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Model file not found: " + filename);
         }
 
         return new Model(vertices.toArray(Vector3[]::new), triangles.toArray(Triangle[]::new), uvs.toArray(Vector3[]::new));
@@ -126,7 +138,13 @@ public class ModelParser {
                     String[] split = line.split(" ");
                     String textureFilename = split[split.length - 1];
                     String texturePath = folderPath + FileSystems.getDefault().getSeparator() + textureFilename;
-                    BufferedImage texture = ImageIO.read(new File(texturePath));
+
+                    BufferedImage texture = null;
+                    try {
+                        texture = ImageIO.read(new File(texturePath));
+                    } catch (IOException e) {
+                        System.out.println("Texture file not found: " + texturePath);
+                    }
 
                     Vector3 diffuseColor = line.startsWith("map_Kd ") ? currentDiffuseColor : Vector3.one();
 
@@ -137,8 +155,12 @@ public class ModelParser {
                     continue;
                 }
             }
+
+            if (!currentMaterialName.isEmpty()) {
+                materials.put(currentMaterialName, new ModelMaterial(null, currentDiffuseColor, currentIsCompletelyTransparent));
+            }
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Material library file not found: " + materialLibPath);
         }
 
         return materials;

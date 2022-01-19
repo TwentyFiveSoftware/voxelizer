@@ -34,11 +34,18 @@ public class ModelMaterial {
     }
 
     private int getARGBAt(Vector3 uv) {
-        if (this.texture == null)
+        if (this.texture == null || this.texture.getWidth() == 0 || this.texture.getHeight() == 0)
             return 0xFFFFFFFF;
 
-        int x = (int) (this.texture.getWidth() * uv.x);
-        int y = (int) (this.texture.getHeight() * (1 - uv.y));
+        double u = Math.min(Math.max(uv.x, 0), 1);
+        double v = 1 - Math.min(Math.max(uv.y, 0), 1);
+
+        int x = (int) (this.texture.getWidth() * u);
+        int y = (int) (this.texture.getHeight() * v);
+
+        x = Math.min(x, this.texture.getWidth() - 1);
+        y = Math.min(y, this.texture.getHeight() - 1);
+
         return this.texture.getRGB(x, y);
     }
 

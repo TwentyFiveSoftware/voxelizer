@@ -6,7 +6,6 @@ import dev.twentyfive.voxelizer.model.VoxelMaterial;
 import dev.twentyfive.voxelizer.util.Voxel;
 import org.bukkit.Material;
 
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 public class Geometry {
