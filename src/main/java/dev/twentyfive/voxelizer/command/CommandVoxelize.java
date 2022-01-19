@@ -20,7 +20,7 @@ public class CommandVoxelize implements CommandExecutor {
         Location location = ((Player) sender).getLocation();
         double scale = Double.parseDouble(args[0]);
         double thickness = Double.parseDouble(args[1]);
-        String filename = String.join(" ", Arrays.copyOfRange(args, 2, args.length)).replaceAll("[^a-zA-Z0-9.-]", "_");
+        String filename = String.join(" ", Arrays.copyOfRange(args, 2, args.length));
 
         VoxelizeHelper.loadVoxelizeAndBuildModelFromFile(filename, scale, thickness, location);
 
