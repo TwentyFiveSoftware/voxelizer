@@ -4,6 +4,7 @@ import dev.twentyfive.voxelizer.model.Model;
 import dev.twentyfive.voxelizer.util.Voxel;
 import org.bukkit.Material;
 
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -67,6 +68,11 @@ public class Geometry {
         return matchingMaterial;
     }
 
+    private static Vector3 getColorAt(BufferedImage texture, Vector3 uv) {
+        int rgb = texture.getRGB((int) (texture.getWidth() * uv.x), (int) (texture.getHeight() * uv.y));
+        return new Vector3((rgb & 0xFF0000) >> 16, (rgb & 0xFF00) >> 8, rgb & 0xFF);
+    }
+
     public static ArrayList<Voxel> voxelizeModel(Model model, double thickness) {
         ArrayList<Voxel> voxels = new ArrayList<>();
 
@@ -87,6 +93,12 @@ public class Geometry {
             Vector3 projectedA = projectVector3To2DPlaneCoordinates(planeNormal, a, b, a);
             Vector3 projectedB = projectVector3To2DPlaneCoordinates(planeNormal, a, b, b);
             Vector3 projectedC = projectVector3To2DPlaneCoordinates(planeNormal, a, b, c);
+
+            Vector3 aUV = model.uvs[triangle.a];
+            Vector3 bUV = model.uvs[triangle.b];
+            Vector3 cUV = model.uvs[triangle.c];
+
+            BufferedImage texture = triangle.material == null ? null : triangle.material.texture;
 
             for (int x = minX; x <= maxX; x++) {
                 for (int y = minY; y <= maxY; y++) {
@@ -111,16 +123,17 @@ public class Geometry {
                         wB /= area;
                         wC /= area;
 
-                        Vector3 aColor = new Vector3(1, 0, 0);
-                        Vector3 bColor = new Vector3(0, 1, 0);
-                        Vector3 cColor = new Vector3(0, 0, 1);
+                        Vector3 aColor = texture == null ? new Vector3(0xFF, 0xFF, 0xFF) : getColorAt(texture, aUV);
+                        Vector3 bColor = texture == null ? new Vector3(0xFF, 0xFF, 0xFF) : getColorAt(texture, bUV);
+                        Vector3 cColor = texture == null ? new Vector3(0xFF, 0xFF, 0xFF) : getColorAt(texture, cUV);
+
                         Vector3 voxelColor = new Vector3(
                                 wA * aColor.x + wB * bColor.x + wC * cColor.x,
                                 wA * aColor.y + wB * bColor.y + wC * cColor.y,
                                 wA * aColor.z + wB * bColor.z + wC * cColor.z
                         );
 
-                        Material voxelMaterial = getMatchingMaterial(Vector3.multiply(voxelColor, 0xFF));
+                        Material voxelMaterial = getMatchingMaterial(voxelColor);
                         voxels.add(new Voxel(new Vector3(x, y, z), voxelMaterial));
                     }
                 }

@@ -62,7 +62,7 @@ public class ModelParser {
                 }
 
                 if (line.startsWith("usemtl ")) {
-                    String materialName = line.substring(8).trim();
+                    String materialName = line.substring(7).trim();
                     currentMaterial = materials.getOrDefault(materialName, null);
                     continue;
                 }
