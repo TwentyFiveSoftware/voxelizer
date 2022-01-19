@@ -5,6 +5,8 @@ import dev.twentyfive.voxelizer.util.Voxel;
 import org.bukkit.Material;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Geometry {
 
@@ -20,8 +22,8 @@ public class Geometry {
         return Vector3.add(point, Vector3.multiply(planeNormal, -calculateSignedDistancePlanePoint(planeNormal, planePoint, point)));
     }
 
-    private static boolean edgeFunction(Vector3 a, Vector3 b, Vector3 point) {
-        return (point.x - a.x) * (b.y - a.y) - (point.y - a.y) * (b.x - a.x) >= 0;
+    private static double edgeFunction(Vector3 a, Vector3 b, Vector3 c) {
+        return (c.x - a.x) * (b.y - a.y) - (c.y - a.y) * (b.x - a.x);
     }
 
     private static Vector3 projectVector3To2DPlaneCoordinates(Vector3 planeNormal, Vector3 planePointA, Vector3 planePointB, Vector3 point) {
@@ -31,6 +33,39 @@ public class Geometry {
         return new Vector3(Vector3.dotProduct(vectorToPoint, xAxis), Vector3.dotProduct(vectorToPoint, yAxis), 0);
     }
 
+    private static final Map<Material, Vector3> MATERIAL_COLORS = new HashMap<>() {{
+        put(Material.BLUE_CONCRETE, new Vector3(60, 109, 181));
+        put(Material.BLACK_CONCRETE, new Vector3(59, 59, 64));
+        put(Material.RED_CONCRETE, new Vector3(181, 64, 64));
+        put(Material.GREEN_CONCRETE, new Vector3(100, 129, 56));
+        put(Material.BROWN_CONCRETE, new Vector3(156, 113, 83));
+        put(Material.PURPLE_CONCRETE, new Vector3(189, 124, 221));
+        put(Material.CYAN_CONCRETE, new Vector3(57, 123, 149));
+        put(Material.LIGHT_GRAY_CONCRETE, new Vector3(208, 208, 208));
+        put(Material.GRAY_CONCRETE, new Vector3(138, 138, 138));
+        put(Material.PINK_CONCRETE, new Vector3(240, 181, 211));
+        put(Material.LIME_CONCRETE, new Vector3(149, 218, 65));
+        put(Material.YELLOW_CONCRETE, new Vector3(234, 234, 77));
+        put(Material.LIGHT_BLUE_CONCRETE, new Vector3(150, 185, 234));
+        put(Material.MAGENTA_CONCRETE, new Vector3(225, 143, 218));
+        put(Material.ORANGE_CONCRETE, new Vector3(234, 173, 83));
+        put(Material.WHITE_CONCRETE, new Vector3(255, 255, 255));
+    }};
+
+    private static Material getMatchingMaterial(Vector3 color) {
+        Material matchingMaterial = Material.NETHER_BRICKS;
+        double score = Integer.MAX_VALUE;
+
+        for (Map.Entry<Material, Vector3> material : MATERIAL_COLORS.entrySet()) {
+            double materialScore = Math.abs(material.getValue().x - color.x) + Math.abs(material.getValue().y - color.y) + Math.abs(material.getValue().z - color.z);
+            if (materialScore < score) {
+                score = materialScore;
+                matchingMaterial = material.getKey();
+            }
+        }
+
+        return matchingMaterial;
+    }
 
     public static ArrayList<Voxel> voxelizeModel(Model model, double thickness) {
         ArrayList<Voxel> voxels = new ArrayList<>();
@@ -63,12 +98,30 @@ public class Geometry {
                             continue;
 
                         Vector3 projectedPoint = projectVector3To2DPlaneCoordinates(planeNormal, a, b, projectPointOnPlane(planeNormal, a, point));
-                        boolean insideTriangle = edgeFunction(projectedB, projectedA, projectedPoint) && edgeFunction(projectedC, projectedB, projectedPoint)
-                                && edgeFunction(projectedA, projectedC, projectedPoint);
+                        double wA = edgeFunction(projectedC, projectedB, projectedPoint);
+                        double wB = edgeFunction(projectedA, projectedC, projectedPoint);
+                        double wC = edgeFunction(projectedB, projectedA, projectedPoint);
+
+                        boolean insideTriangle = wA >= 0 && wB >= 0 && wC >= 0;
                         if (!insideTriangle)
                             continue;
 
-                        voxels.add(new Voxel(new Vector3(x, y, z), Material.RED_CONCRETE));
+                        double area = edgeFunction(projectedC, projectedB, projectedA);
+                        wA /= area;
+                        wB /= area;
+                        wC /= area;
+
+                        Vector3 aColor = new Vector3(1, 0, 0);
+                        Vector3 bColor = new Vector3(0, 1, 0);
+                        Vector3 cColor = new Vector3(0, 0, 1);
+                        Vector3 voxelColor = new Vector3(
+                                wA * aColor.x + wB * bColor.x + wC * cColor.x,
+                                wA * aColor.y + wB * bColor.y + wC * cColor.y,
+                                wA * aColor.z + wB * bColor.z + wC * cColor.z
+                        );
+
+                        Material voxelMaterial = getMatchingMaterial(Vector3.multiply(voxelColor, 0xFF));
+                        voxels.add(new Voxel(new Vector3(x, y, z), voxelMaterial));
                     }
                 }
             }
