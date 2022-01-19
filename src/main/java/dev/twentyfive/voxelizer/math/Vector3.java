@@ -45,6 +45,10 @@ public class Vector3 {
         return new Vector3(0, 0, 0);
     }
 
+    public static Vector3 one() {
+        return new Vector3(1, 1, 1);
+    }
+
     @Override
     public String toString() {
         return "Vector3 (" + x + ", " + y + ", " + z + ")";

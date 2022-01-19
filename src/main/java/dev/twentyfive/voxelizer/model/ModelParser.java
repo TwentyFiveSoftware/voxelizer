@@ -95,10 +95,30 @@ public class ModelParser {
 
         try (BufferedReader br = new BufferedReader(new FileReader(materialLibPath))) {
             String currentMaterialName = "";
+            Vector3 currentDiffuseColor = Vector3.one();
+            boolean currentIsCompletelyTransparent = false;
 
             for (String line; (line = br.readLine()) != null; ) {
                 if (line.startsWith("newmtl ")) {
+                    if (currentMaterialName.length() > 0) {
+                        materials.put(currentMaterialName, new ModelMaterial(null, currentDiffuseColor, currentIsCompletelyTransparent));
+                        currentDiffuseColor = Vector3.one();
+                        currentIsCompletelyTransparent = false;
+                    }
+
                     currentMaterialName = line.substring(7).trim();
+                    continue;
+                }
+
+                if (line.startsWith("Kd ")) {
+                    String[] rgb = line.substring(3).trim().split(" ");
+                    currentDiffuseColor = new Vector3(Double.parseDouble(rgb[0]), Double.parseDouble(rgb[1]), Double.parseDouble(rgb[2]));
+                    continue;
+                }
+
+                if (line.startsWith("d ")) {
+                    double opacity = Double.parseDouble(line.substring(2).trim());
+                    currentIsCompletelyTransparent = opacity != 1;
                     continue;
                 }
 
@@ -107,8 +127,13 @@ public class ModelParser {
                     String textureFilename = split[split.length - 1];
                     String texturePath = folderPath + FileSystems.getDefault().getSeparator() + textureFilename;
                     BufferedImage texture = ImageIO.read(new File(texturePath));
-                    materials.put(currentMaterialName, new ModelMaterial(texture));
+
+                    Vector3 diffuseColor = line.startsWith("map_Kd ") ? currentDiffuseColor : Vector3.one();
+
+                    materials.put(currentMaterialName, new ModelMaterial(texture, diffuseColor, currentIsCompletelyTransparent));
                     currentMaterialName = "";
+                    currentDiffuseColor = Vector3.one();
+                    currentIsCompletelyTransparent = false;
                     continue;
                 }
             }
