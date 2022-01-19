@@ -60,6 +60,26 @@ public class VoxelMaterial {
             new VoxelMaterial(Material.GRAY_TERRACOTTA, new Vector3(57, 42, 35))
     ));
 
+    private static final ArrayList<VoxelMaterial> TRANSPARENT_VOXEL_MATERIALS = new ArrayList<>(List.of(
+            new VoxelMaterial(Material.LIGHT_BLUE_STAINED_GLASS, new Vector3(102, 153, 216)),
+            new VoxelMaterial(Material.CYAN_STAINED_GLASS, new Vector3(76, 127, 153)),
+            new VoxelMaterial(Material.MAGENTA_STAINED_GLASS, new Vector3(178, 76, 216)),
+            new VoxelMaterial(Material.BROWN_STAINED_GLASS, new Vector3(102, 76, 51)),
+            new VoxelMaterial(Material.BLACK_STAINED_GLASS, new Vector3(25, 25, 25)),
+            new VoxelMaterial(Material.WHITE_STAINED_GLASS, new Vector3(255, 255, 255)),
+            new VoxelMaterial(Material.LIGHT_GRAY_STAINED_GLASS, new Vector3(153, 153, 153)),
+            new VoxelMaterial(Material.YELLOW_STAINED_GLASS, new Vector3(229, 229, 51)),
+            new VoxelMaterial(Material.PURPLE_STAINED_GLASS, new Vector3(127, 63, 178)),
+            new VoxelMaterial(Material.BLUE_STAINED_GLASS, new Vector3(51, 76, 178)),
+            new VoxelMaterial(Material.ORANGE_STAINED_GLASS, new Vector3(216, 127, 51)),
+            new VoxelMaterial(Material.GRAY_STAINED_GLASS, new Vector3(76, 76, 76)),
+            new VoxelMaterial(Material.TINTED_GLASS, new Vector3(43, 38, 45)),
+            new VoxelMaterial(Material.GREEN_STAINED_GLASS, new Vector3(102, 127, 51)),
+            new VoxelMaterial(Material.RED_STAINED_GLASS, new Vector3(153, 51, 51)),
+            new VoxelMaterial(Material.LIME_STAINED_GLASS, new Vector3(127, 204, 25)),
+            new VoxelMaterial(Material.PINK_STAINED_GLASS, new Vector3(242, 127, 165))
+    ));
+
     public Material material;
     public Vector3 color;
 
@@ -68,11 +88,11 @@ public class VoxelMaterial {
         this.color = color;
     }
 
-    public static Material getMatchingMaterial(Vector3 color) {
+    public static Material getMatchingMaterial(Vector3 color, boolean transparent) {
         Material matchingMaterial = Material.AIR;
         double smallestDifference = Double.MAX_VALUE;
 
-        for (VoxelMaterial voxelMaterial : VOXEL_MATERIALS) {
+        for (VoxelMaterial voxelMaterial : (transparent ? TRANSPARENT_VOXEL_MATERIALS : VOXEL_MATERIALS)) {
             final double difference = ColorHelper.calculateColorDifference(color, voxelMaterial.color);
 
             if (difference < smallestDifference) {
