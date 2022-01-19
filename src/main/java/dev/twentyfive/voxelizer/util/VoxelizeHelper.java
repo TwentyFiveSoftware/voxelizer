@@ -18,10 +18,10 @@ public class VoxelizeHelper {
     }
 
     private static Model loadModelFromFile(String filename, double scale) {
-        System.out.println();
-        System.out.println("Loading model from file...");
-        System.out.println("    File: " + filename);
-        System.out.println("    Scale: " + scale);
+        Logger.log();
+        Logger.log("Loading model from file...");
+        Logger.log("    File: " + filename);
+        Logger.log("    Scale: " + scale);
 
         final long startTime = System.currentTimeMillis();
 
@@ -29,16 +29,17 @@ public class VoxelizeHelper {
 
         final long deltaTime = System.currentTimeMillis() - startTime;
 
-        System.out.println("    Model vertices: " + model.vertices.length);
-        System.out.println("    Model triangles: " + model.triangles.length);
-        System.out.println("Loading model in " + deltaTime + "ms");
+        Logger.log("    Model vertices: " + model.vertices.length);
+        Logger.log("    Model triangles: " + model.triangles.length);
+        Logger.log("    Model uvs: " + model.uvs.length);
+        Logger.log("Loaded model in " + deltaTime + "ms");
 
         return model;
     }
 
     private static Voxel[] voxelizeModel(Model model, double thickness) {
-        System.out.println();
-        System.out.println("Voxelizing model...");
+        Logger.log();
+        Logger.log("Voxelizing model...");
 
         final long startTime = System.currentTimeMillis();
 
@@ -46,8 +47,8 @@ public class VoxelizeHelper {
 
         final long deltaTime = System.currentTimeMillis() - startTime;
 
-        System.out.println("    Voxels: " + voxels.length);
-        System.out.println("Voxelized model in " + deltaTime + "ms");
+        Logger.log("    Voxels: " + voxels.length);
+        Logger.log("Voxelized model in " + deltaTime + "ms");
 
         return voxels;
     }
@@ -56,27 +57,29 @@ public class VoxelizeHelper {
         final int MAX_BLOCKS_PER_TASK = 20000;
         final int RUN_TASK_EVERY_TICKS = 1;
 
-        System.out.println();
-        System.out.println("Spawning build tasks...");
+        Logger.log();
+        Logger.log("Spawning build tasks...");
 
         final long startTime = System.currentTimeMillis();
 
         int tasks = (int) Math.ceil(((float) voxels.length) / MAX_BLOCKS_PER_TASK);
-        System.out.println("    Tasks: " + tasks);
-        System.out.println("    Blocks / task: " + MAX_BLOCKS_PER_TASK);
-        System.out.println("    Task delay: " + RUN_TASK_EVERY_TICKS);
+        Logger.log("    Tasks: " + tasks);
+        Logger.log("    Blocks / task: " + MAX_BLOCKS_PER_TASK);
+        Logger.log("    Task delay: " + RUN_TASK_EVERY_TICKS);
 
         Vector3 position = new Vector3(location.getBlockX(), location.getBlockY(), location.getBlockZ());
 
         for (int task = 0; task < tasks; task++) {
             Voxel[] taskVoxels = Arrays.copyOfRange(voxels, task * MAX_BLOCKS_PER_TASK, Math.min((task + 1) * MAX_BLOCKS_PER_TASK, voxels.length));
-            new VoxelBuildTask(location.getWorld(), position, taskVoxels, task + 1, tasks)
+            String logMessage = "Running build task " + (task + 1) + " / " + tasks + " (" + ((task + 1) * 100 / tasks) + "%)";
+
+            new VoxelBuildTask(location.getWorld(), position, taskVoxels, logMessage)
                     .runTaskLater(Voxelizer.instance, (long) (task + 1) * RUN_TASK_EVERY_TICKS);
         }
 
         final long deltaTime = System.currentTimeMillis() - startTime;
-        System.out.println("Spawned build tasks in " + deltaTime + "ms");
-        System.out.println();
+        Logger.log("Spawned build tasks in " + deltaTime + "ms");
+        Logger.log();
     }
 
 }

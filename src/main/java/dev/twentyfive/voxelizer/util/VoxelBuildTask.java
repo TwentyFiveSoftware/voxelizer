@@ -8,20 +8,18 @@ public class VoxelBuildTask extends BukkitRunnable {
     private final World world;
     private final Vector3 position;
     private final Voxel[] voxels;
-    private final int taskIndex;
-    private final int tasksTotal;
+    private final String taskLogMessage;
 
-    public VoxelBuildTask(World world, Vector3 position, Voxel[] voxels, int taskIndex, int tasksTotal) {
+    public VoxelBuildTask(World world, Vector3 position, Voxel[] voxels, String taskLogMessage) {
         this.world = world;
         this.position = position;
         this.voxels = voxels;
-        this.taskIndex = taskIndex;
-        this.tasksTotal = tasksTotal;
+        this.taskLogMessage = taskLogMessage;
     }
 
     @Override
     public void run() {
-        System.out.println("Running build task " + taskIndex + " / " + tasksTotal + " (" + (taskIndex * 100 / tasksTotal) + "%)");
+        Logger.log(taskLogMessage);
 
         for (Voxel voxel : this.voxels) {
             world.getBlockAt((int) (position.x + voxel.location.x), (int) (position.y + voxel.location.y), (int) (position.z + voxel.location.z))

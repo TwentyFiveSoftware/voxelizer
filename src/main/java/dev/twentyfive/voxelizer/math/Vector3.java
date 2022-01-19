@@ -9,6 +9,26 @@ public class Vector3 {
         this.z = z;
     }
 
+    public static Vector3 zero() {
+        return new Vector3(0, 0, 0);
+    }
+
+    public static Vector3 one() {
+        return new Vector3(1, 1, 1);
+    }
+
+    public static Vector3 add(Vector3 a, Vector3 b) {
+        return new Vector3(a.x + b.x, a.y + b.y, a.z + b.z);
+    }
+
+    public static Vector3 sub(Vector3 a, Vector3 b) {
+        return new Vector3(a.x - b.x, a.y - b.y, a.z - b.z);
+    }
+
+    public static Vector3 multiply(Vector3 v, double scalar) {
+        return new Vector3(v.x * scalar, v.y * scalar, v.z * scalar);
+    }
+
     public static Vector3 crossProduct(Vector3 a, Vector3 b) {
         return new Vector3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
     }
@@ -27,26 +47,6 @@ public class Vector3 {
         this.y /= magnitude;
         this.z /= magnitude;
         return this;
-    }
-
-    public static Vector3 add(Vector3 a, Vector3 b) {
-        return new Vector3(a.x + b.x, a.y + b.y, a.z + b.z);
-    }
-
-    public static Vector3 sub(Vector3 a, Vector3 b) {
-        return new Vector3(a.x - b.x, a.y - b.y, a.z - b.z);
-    }
-
-    public static Vector3 multiply(Vector3 v, double scalar) {
-        return new Vector3(v.x * scalar, v.y * scalar, v.z * scalar);
-    }
-
-    public static Vector3 zero() {
-        return new Vector3(0, 0, 0);
-    }
-
-    public static Vector3 one() {
-        return new Vector3(1, 1, 1);
     }
 
     @Override

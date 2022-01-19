@@ -10,15 +10,7 @@ public class Voxelizer extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
-
         this.getCommand("voxelize").setExecutor(new CommandVoxelize());
-
-        getLogger().info("Voxelizer enabled");
-    }
-
-    @Override
-    public void onDisable() {
-        getLogger().info("Voxelizer disabled");
     }
 
 }

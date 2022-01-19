@@ -6,13 +6,13 @@ import java.awt.image.BufferedImage;
 
 public class ModelMaterial {
 
-    public final BufferedImage texture;
-    public final Vector3 diffuseColor;
-    public final boolean completelyTransparent;
+    public BufferedImage texture;
+    public Vector3 diffuseColor;
+    public boolean completelyTransparent;
 
-    public ModelMaterial(BufferedImage texture, Vector3 diffuseColorMultiplier, boolean completelyTransparent) {
+    public ModelMaterial(BufferedImage texture, Vector3 diffuseColor, boolean completelyTransparent) {
         this.texture = texture;
-        this.diffuseColor = diffuseColorMultiplier;
+        this.diffuseColor = diffuseColor;
         this.completelyTransparent = completelyTransparent;
     }
 
