@@ -32,11 +32,11 @@ public class ModelParser {
         ArrayList<Vector3> uvs = new ArrayList<>();
         ArrayList<Triangle> triangles = new ArrayList<>();
 
-        Map<String, Material> materials = new HashMap<>();
+        Map<String, ModelMaterial> materials = new HashMap<>();
         String materialsFolderPath = new File(getPathToFile(filename)).getParent();
 
         try (BufferedReader br = new BufferedReader(new FileReader(getPathToFile(filename)))) {
-            Material currentMaterial = null;
+            ModelMaterial currentMaterial = null;
 
             for (String line; (line = br.readLine()) != null; ) {
                 if (line.startsWith("v ")) {
@@ -88,8 +88,8 @@ public class ModelParser {
         return new Model(vertices.toArray(Vector3[]::new), triangles.toArray(Triangle[]::new), uvs.toArray(Vector3[]::new));
     }
 
-    private static Map<String, Material> parseMaterialLib(String folderPath, String filename) {
-        Map<String, Material> materials = new HashMap<>();
+    private static Map<String, ModelMaterial> parseMaterialLib(String folderPath, String filename) {
+        Map<String, ModelMaterial> materials = new HashMap<>();
 
         String materialLibPath = folderPath + FileSystems.getDefault().getSeparator() + filename;
 
@@ -107,7 +107,7 @@ public class ModelParser {
                     String textureFilename = split[split.length - 1];
                     String texturePath = folderPath + FileSystems.getDefault().getSeparator() + textureFilename;
                     BufferedImage texture = ImageIO.read(new File(texturePath));
-                    materials.put(currentMaterialName, new Material(texture));
+                    materials.put(currentMaterialName, new ModelMaterial(texture));
                     currentMaterialName = "";
                     continue;
                 }

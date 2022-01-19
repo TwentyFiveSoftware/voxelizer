@@ -1,14 +1,12 @@
 package dev.twentyfive.voxelizer.math;
 
 import dev.twentyfive.voxelizer.model.Model;
-import dev.twentyfive.voxelizer.util.ColorHelper;
+import dev.twentyfive.voxelizer.model.VoxelMaterial;
 import dev.twentyfive.voxelizer.util.Voxel;
 import org.bukkit.Material;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 public class Geometry {
 
@@ -33,41 +31,6 @@ public class Geometry {
         Vector3 yAxis = Vector3.crossProduct(planeNormal, xAxis).normalize();
         Vector3 vectorToPoint = Vector3.sub(point, planePointA);
         return new Vector3(Vector3.dotProduct(vectorToPoint, xAxis), Vector3.dotProduct(vectorToPoint, yAxis), 0);
-    }
-
-    private static final Map<Material, Vector3> MATERIAL_COLORS = new HashMap<>() {{
-        put(Material.BLUE_CONCRETE, new Vector3(44, 46, 143));
-        put(Material.BLACK_CONCRETE, new Vector3(8, 10, 15));
-        put(Material.RED_CONCRETE, new Vector3(142, 32, 32));
-        put(Material.GREEN_CONCRETE, new Vector3(73, 91, 36));
-        put(Material.BROWN_CONCRETE, new Vector3(96, 59, 31));
-        put(Material.PURPLE_CONCRETE, new Vector3(100, 31, 156));
-        put(Material.CYAN_CONCRETE, new Vector3(21, 119, 136));
-        put(Material.LIGHT_GRAY_CONCRETE, new Vector3(125, 125, 115));
-        put(Material.GRAY_CONCRETE, new Vector3(54, 57, 61));
-        put(Material.PINK_CONCRETE, new Vector3(213, 101, 142));
-        put(Material.LIME_CONCRETE, new Vector3(94, 168, 24));
-        put(Material.YELLOW_CONCRETE, new Vector3(240, 175, 21));
-        put(Material.LIGHT_BLUE_CONCRETE, new Vector3(35, 137, 198));
-        put(Material.MAGENTA_CONCRETE, new Vector3(169, 48, 159));
-        put(Material.ORANGE_CONCRETE, new Vector3(224, 97, 0));
-        put(Material.WHITE_CONCRETE, new Vector3(207, 213, 214));
-    }};
-
-    public static Material getMatchingMaterial(Vector3 color) {
-        Material matchingMaterial = Material.NETHER_BRICKS;
-        double smallestDifference = Double.MAX_VALUE;
-
-        for (Map.Entry<Material, Vector3> material : MATERIAL_COLORS.entrySet()) {
-            double difference = ColorHelper.calculateColorDifference(color, material.getValue());
-
-            if (difference < smallestDifference) {
-                smallestDifference = difference;
-                matchingMaterial = material.getKey();
-            }
-        }
-
-        return matchingMaterial;
     }
 
     private static Vector3 getColorAt(BufferedImage texture, Vector3 uv) {
@@ -133,7 +96,7 @@ public class Geometry {
                         );
 
                         Vector3 voxelColor = texture == null ? new Vector3(0xFF, 0xFF, 0xFF) : getColorAt(texture, voxelUV);
-                        Material voxelMaterial = getMatchingMaterial(voxelColor);
+                        Material voxelMaterial = VoxelMaterial.getMatchingMaterial(voxelColor);
                         voxels.add(new Voxel(new Vector3(x, y, z), voxelMaterial));
                     }
                 }

@@ -2,11 +2,11 @@ package dev.twentyfive.voxelizer.model;
 
 import java.awt.image.BufferedImage;
 
-public class Material {
+public class ModelMaterial {
 
     public final BufferedImage texture;
 
-    public Material(BufferedImage texture) {
+    public ModelMaterial(BufferedImage texture) {
         this.texture = texture;
     }
 
