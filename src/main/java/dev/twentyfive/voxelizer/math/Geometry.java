@@ -36,25 +36,25 @@ public class Geometry {
     }
 
     private static final Map<Material, Vector3> MATERIAL_COLORS = new HashMap<>() {{
-        put(Material.BLUE_CONCRETE, new Vector3(60, 109, 181));
-        put(Material.BLACK_CONCRETE, new Vector3(59, 59, 64));
-        put(Material.RED_CONCRETE, new Vector3(181, 64, 64));
-        put(Material.GREEN_CONCRETE, new Vector3(100, 129, 56));
-        put(Material.BROWN_CONCRETE, new Vector3(156, 113, 83));
-        put(Material.PURPLE_CONCRETE, new Vector3(189, 124, 221));
-        put(Material.CYAN_CONCRETE, new Vector3(57, 123, 149));
-        put(Material.LIGHT_GRAY_CONCRETE, new Vector3(208, 208, 208));
-        put(Material.GRAY_CONCRETE, new Vector3(138, 138, 138));
-        put(Material.PINK_CONCRETE, new Vector3(240, 181, 211));
-        put(Material.LIME_CONCRETE, new Vector3(149, 218, 65));
-        put(Material.YELLOW_CONCRETE, new Vector3(234, 234, 77));
-        put(Material.LIGHT_BLUE_CONCRETE, new Vector3(150, 185, 234));
-        put(Material.MAGENTA_CONCRETE, new Vector3(225, 143, 218));
-        put(Material.ORANGE_CONCRETE, new Vector3(234, 173, 83));
-        put(Material.WHITE_CONCRETE, new Vector3(255, 255, 255));
+        put(Material.BLUE_CONCRETE, new Vector3(44, 46, 143));
+        put(Material.BLACK_CONCRETE, new Vector3(8, 10, 15));
+        put(Material.RED_CONCRETE, new Vector3(142, 32, 32));
+        put(Material.GREEN_CONCRETE, new Vector3(73, 91, 36));
+        put(Material.BROWN_CONCRETE, new Vector3(96, 59, 31));
+        put(Material.PURPLE_CONCRETE, new Vector3(100, 31, 156));
+        put(Material.CYAN_CONCRETE, new Vector3(21, 119, 136));
+        put(Material.LIGHT_GRAY_CONCRETE, new Vector3(125, 125, 115));
+        put(Material.GRAY_CONCRETE, new Vector3(54, 57, 61));
+        put(Material.PINK_CONCRETE, new Vector3(213, 101, 142));
+        put(Material.LIME_CONCRETE, new Vector3(94, 168, 24));
+        put(Material.YELLOW_CONCRETE, new Vector3(240, 175, 21));
+        put(Material.LIGHT_BLUE_CONCRETE, new Vector3(35, 137, 198));
+        put(Material.MAGENTA_CONCRETE, new Vector3(169, 48, 159));
+        put(Material.ORANGE_CONCRETE, new Vector3(224, 97, 0));
+        put(Material.WHITE_CONCRETE, new Vector3(207, 213, 214));
     }};
 
-    private static Material getMatchingMaterial(Vector3 color) {
+    public static Material getMatchingMaterial(Vector3 color) {
         Material matchingMaterial = Material.NETHER_BRICKS;
         double smallestDifference = Double.MAX_VALUE;
 
@@ -71,7 +71,7 @@ public class Geometry {
     }
 
     private static Vector3 getColorAt(BufferedImage texture, Vector3 uv) {
-        int rgb = texture.getRGB((int) (texture.getWidth() * uv.x), (int) (texture.getHeight() * uv.y));
+        int rgb = texture.getRGB((int) (texture.getWidth() * uv.x), (int) (texture.getHeight() * (1 - uv.y)));
         return new Vector3((rgb & 0xFF0000) >> 16, (rgb & 0xFF00) >> 8, rgb & 0xFF);
     }
 
@@ -96,11 +96,12 @@ public class Geometry {
             Vector3 projectedB = projectVector3To2DPlaneCoordinates(planeNormal, a, b, b);
             Vector3 projectedC = projectVector3To2DPlaneCoordinates(planeNormal, a, b, c);
 
-            Vector3 aUV = model.uvs[triangle.a];
-            Vector3 bUV = model.uvs[triangle.b];
-            Vector3 cUV = model.uvs[triangle.c];
+            Vector3 aUV = (triangle.aUV >= 0 && model.uvs.length > triangle.aUV) ? model.uvs[triangle.aUV] : Vector3.zero();
+            Vector3 bUV = (triangle.bUV >= 0 && model.uvs.length > triangle.bUV) ? model.uvs[triangle.bUV] : Vector3.zero();
+            Vector3 cUV = (triangle.cUV >= 0 && model.uvs.length > triangle.cUV) ? model.uvs[triangle.cUV] : Vector3.zero();
 
             BufferedImage texture = triangle.material == null ? null : triangle.material.texture;
+
 
             for (int x = minX; x <= maxX; x++) {
                 for (int y = minY; y <= maxY; y++) {
@@ -125,16 +126,13 @@ public class Geometry {
                         wB /= area;
                         wC /= area;
 
-                        Vector3 aColor = texture == null ? new Vector3(0xFF, 0xFF, 0xFF) : getColorAt(texture, aUV);
-                        Vector3 bColor = texture == null ? new Vector3(0xFF, 0xFF, 0xFF) : getColorAt(texture, bUV);
-                        Vector3 cColor = texture == null ? new Vector3(0xFF, 0xFF, 0xFF) : getColorAt(texture, cUV);
-
-                        Vector3 voxelColor = new Vector3(
-                                wA * aColor.x + wB * bColor.x + wC * cColor.x,
-                                wA * aColor.y + wB * bColor.y + wC * cColor.y,
-                                wA * aColor.z + wB * bColor.z + wC * cColor.z
+                        Vector3 voxelUV = new Vector3(
+                                wA * aUV.x + wB * bUV.x + wC * cUV.x,
+                                wA * aUV.y + wB * bUV.y + wC * cUV.y,
+                                0
                         );
 
+                        Vector3 voxelColor = texture == null ? new Vector3(0xFF, 0xFF, 0xFF) : getColorAt(texture, voxelUV);
                         Material voxelMaterial = getMatchingMaterial(voxelColor);
                         voxels.add(new Voxel(new Vector3(x, y, z), voxelMaterial));
                     }

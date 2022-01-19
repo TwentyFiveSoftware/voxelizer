@@ -41,6 +41,10 @@ public class Vector3 {
         return new Vector3(v.x * scalar, v.y * scalar, v.z * scalar);
     }
 
+    public static Vector3 zero() {
+        return new Vector3(0, 0, 0);
+    }
+
     @Override
     public String toString() {
         return "Vector3 (" + x + ", " + y + ", " + z + ")";

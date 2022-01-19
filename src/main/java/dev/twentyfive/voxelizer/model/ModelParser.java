@@ -54,10 +54,18 @@ public class ModelParser {
 
                 if (line.startsWith("f ")) {
                     String[] abc = line.substring(2).trim().split(" ");
-                    int a = Integer.parseInt(abc[0].split("/")[0]) - 1;
-                    int b = Integer.parseInt(abc[1].split("/")[0]) - 1;
-                    int c = Integer.parseInt(abc[2].split("/")[0]) - 1;
-                    triangles.add(new Triangle(a, b, c, currentMaterial));
+                    String[] aSplit = abc[0].split("/");
+                    String[] bSplit = abc[1].split("/");
+                    String[] cSplit = abc[2].split("/");
+
+                    int a = Integer.parseInt(aSplit[0]) - 1;
+                    int b = Integer.parseInt(bSplit[0]) - 1;
+                    int c = Integer.parseInt(cSplit[0]) - 1;
+                    int aUV = (aSplit.length > 1 ? Integer.parseInt(aSplit[1]) : 0) - 1;
+                    int bUV = (bSplit.length > 1 ? Integer.parseInt(bSplit[1]) : 0) - 1;
+                    int cUV = (cSplit.length > 1 ? Integer.parseInt(cSplit[1]) : 0) - 1;
+
+                    triangles.add(new Triangle(a, b, c, aUV, bUV, cUV, currentMaterial));
                     continue;
                 }
 
