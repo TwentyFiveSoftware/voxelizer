@@ -32,6 +32,11 @@ public class PathHelper {
         }
     }
 
+    public static void createDataFolder() {
+        if (!Voxelizer.instance.getDataFolder().exists())
+            Voxelizer.instance.getDataFolder().mkdir();
+    }
+
     public static boolean isAllowedObjPath(String path) {
         return REGEX_ALLOWED_OBJ_PATH.matcher(path.trim()).matches();
     }
@@ -41,11 +46,6 @@ public class PathHelper {
             return false;
 
         return getFile(path).exists();
-    }
-
-    private static void createDataFolder() {
-        if (!Voxelizer.instance.getDataFolder().exists())
-            Voxelizer.instance.getDataFolder().mkdir();
     }
 
     private static String toRelativePath(String absolutePath) {
