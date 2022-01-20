@@ -9,7 +9,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.FileSystems;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -22,7 +22,7 @@ public class MaterialLibParser {
     public static Map<String, ModelMaterial> parseMaterialLib(String folderPath, String filename) {
         Map<String, ModelMaterial> materials = new HashMap<>();
 
-        String materialLibPath = folderPath + FileSystems.getDefault().getSeparator() + filename;
+        String materialLibPath = Paths.get(folderPath, filename).toString();
 
         try (BufferedReader br = new BufferedReader(new FileReader(materialLibPath))) {
             String currentMaterialName = "";
@@ -68,7 +68,7 @@ public class MaterialLibParser {
     private static BufferedImage parseLineMapTexture(String line, String folderPath) {
         String[] split = line.split(" ");
         String textureFilename = split[split.length - 1];
-        String texturePath = folderPath + FileSystems.getDefault().getSeparator() + textureFilename;
+        String texturePath = Paths.get(folderPath, textureFilename).toString();
 
         BufferedImage texture = null;
         try {

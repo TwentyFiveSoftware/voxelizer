@@ -3,13 +3,11 @@ package dev.twentyfive.voxelizer.model;
 import dev.twentyfive.voxelizer.math.Triangle;
 import dev.twentyfive.voxelizer.math.Vector3;
 import dev.twentyfive.voxelizer.util.Logger;
+import dev.twentyfive.voxelizer.util.PathHelper;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,9 +27,9 @@ public class ModelParser {
         ArrayList<Triangle> triangles = new ArrayList<>();
 
         Map<String, ModelMaterial> materials = new HashMap<>();
-        String materialsFolderPath = new File(getPathToFile(filename)).getParent();
+        String materialsFolderPath = PathHelper.getFile(filename).getParent();
 
-        try (BufferedReader br = new BufferedReader(new FileReader(getPathToFile(filename)))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(PathHelper.getFile(filename)))) {
             ModelMaterial triangleMaterial = null;
 
             for (String line; (line = br.readLine()) != null; ) {
@@ -56,16 +54,6 @@ public class ModelParser {
         }
 
         return new Model(vertices.toArray(Vector3[]::new), triangles.toArray(Triangle[]::new), uvs.toArray(Vector3[]::new));
-    }
-
-    private static String getPathToFile(String filename) {
-        return Paths.get("").toAbsolutePath()
-                + FileSystems.getDefault().getSeparator()
-                + "plugins"
-                + FileSystems.getDefault().getSeparator()
-                + "Voxelizer"
-                + FileSystems.getDefault().getSeparator()
-                + filename;
     }
 
     private static Vector3 parseLineVertex(String line, double scale) {

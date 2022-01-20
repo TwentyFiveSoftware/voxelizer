@@ -1,8 +1,8 @@
 name: Voxelizer
 version: 1.0
 main: dev.twentyfive.voxelizer.Voxelizer
-api-version: 1.18
+api-version: 1.13
 commands:
   voxelize:
     description: Voxelize a 3d model from a .obj file
-    usage: voxelize <scale> <thickness> <.obj file>
+    usage: voxelize <.obj file (no spaces)> [<scale, default 1>] [<thickness, default 1>]
