@@ -11,6 +11,7 @@ public class Voxelizer extends JavaPlugin {
     public void onEnable() {
         instance = this;
         this.getCommand("voxelize").setExecutor(new CommandVoxelize());
+        this.getCommand("voxelize").setTabCompleter(new CommandVoxelize());
     }
 
 }
