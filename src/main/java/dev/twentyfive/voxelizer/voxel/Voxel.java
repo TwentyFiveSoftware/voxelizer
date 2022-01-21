@@ -1,4 +1,4 @@
-package dev.twentyfive.voxelizer.util;
+package dev.twentyfive.voxelizer.voxel;
 
 import dev.twentyfive.voxelizer.math.Vector3;
 import org.bukkit.Material;

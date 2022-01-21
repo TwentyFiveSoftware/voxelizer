@@ -1,6 +1,7 @@
 package dev.twentyfive.voxelizer.util;
 
 import dev.twentyfive.voxelizer.math.Vector3;
+import dev.twentyfive.voxelizer.voxel.Voxel;
 import org.bukkit.World;
 import org.bukkit.scheduler.BukkitRunnable;
 

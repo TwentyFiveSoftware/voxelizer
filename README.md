@@ -16,7 +16,7 @@ To achieve this, the plugin executes following steps:
 
 ## "Voxelizing"
 
-Voxelizing is done by iterating over every triangle in the mesh. For every block in the bounding box of the triangle we have to check if that block's distance to the 3d plane of the triangle is less than the specified thickness. If this is the case, we also have to check if that block lies inside the triangle. This is done by projecting the blocks 3d coordinates onto a 2d coordinate system spanned by the triangle. Then a simple edge function is applied to that point to check if the point (and so the block) is inside the triangle (see rasterization for more detail). The next step is to calculate the color and find the closest matching Minecraft material for every block inside the triangle (see below).
+Voxelizing is done by iterating over every triangle in the mesh (multithreaded). For every block in the bounding box of the triangle we have to check if that block's distance to the 3d plane of the triangle is less than the specified thickness. If this is the case, we also have to check if that block lies inside the triangle. This is done by projecting the blocks 3d coordinates onto a 2d coordinate system spanned by the triangle. Then a simple edge function is applied to that point to check if the point (and so the block) is inside the triangle (see rasterization for more detail). The next step is to calculate the color and find the closest matching Minecraft material for every block inside the triangle (see below).
 
 ## Material mapping
 

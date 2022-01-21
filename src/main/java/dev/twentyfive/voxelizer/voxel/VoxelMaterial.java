@@ -1,4 +1,4 @@
-package dev.twentyfive.voxelizer.model;
+package dev.twentyfive.voxelizer.voxel;
 
 import dev.twentyfive.voxelizer.math.Vector3;
 import dev.twentyfive.voxelizer.util.ColorHelper;

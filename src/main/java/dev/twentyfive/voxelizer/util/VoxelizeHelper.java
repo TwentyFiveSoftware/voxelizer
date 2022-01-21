@@ -1,10 +1,11 @@
 package dev.twentyfive.voxelizer.util;
 
 import dev.twentyfive.voxelizer.Voxelizer;
-import dev.twentyfive.voxelizer.math.Geometry;
 import dev.twentyfive.voxelizer.math.Vector3;
 import dev.twentyfive.voxelizer.model.Model;
 import dev.twentyfive.voxelizer.model.ModelParser;
+import dev.twentyfive.voxelizer.voxel.ModelVoxelizer;
+import dev.twentyfive.voxelizer.voxel.Voxel;
 import org.bukkit.Location;
 
 import java.util.Arrays;
@@ -43,7 +44,7 @@ public class VoxelizeHelper {
 
         final long startTime = System.currentTimeMillis();
 
-        final Voxel[] voxels = Geometry.voxelizeModel(model, thickness).toArray(Voxel[]::new);
+        final Voxel[] voxels = ModelVoxelizer.voxelizeModel(model, thickness);
 
         final long deltaTime = System.currentTimeMillis() - startTime;
 
